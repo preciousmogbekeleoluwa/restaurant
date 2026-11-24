@@ -240,7 +240,7 @@ export const MENU_ITEMS: MenuItem[] = [
     categoryLabel: "Pasta",
     description: "Hand-rolled egg fettuccine tossed in a silky black truffle and aged Parmigiano-Reggiano emulsion, loaded with pan-seared tiger prawns, sweet bay scallops, and Italian flat-leaf parsley.",
     price: 45,
-    image: "https://images.unsplash.com/photo-1621996346565-e3d5d62817d2?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=800&q=80",
     popular: true,
     isSpecialOffer: true,
     discountBadge: "CHEF'S SPECIAL",

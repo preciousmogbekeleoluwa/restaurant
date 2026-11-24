@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { X, Plus, Minus, Flame, Clock, Sparkles, MessageCircle, ShoppingBag } from 'lucide-react';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 
 export const FoodDetailModal: React.FC = () => {
-  const { selectedFoodModal, setSelectedFoodModal, addToCart } = useCart();
+  const { selectedFoodModal, setSelectedFoodModal, addToCart, formatPrice } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedFoodModal(null);
+    };
+    if (selectedFoodModal) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedFoodModal, setSelectedFoodModal]);
 
   if (!selectedFoodModal) return null;
 
@@ -21,7 +31,7 @@ export const FoodDetailModal: React.FC = () => {
   };
 
   const handleQuickWhatsApp = () => {
-    const text = `Hello Pretodan Restaurant! I would like to order:\n*${item.name}*\nQuantity: ${quantity}\nTotal: $${totalPrice}.00\n${
+    const text = `Hello Pretodan Restaurant! I would like to order:\n*${item.name}*\nQuantity: ${quantity}\nTotal: ${formatPrice(totalPrice)}\n${
       notes ? `Special Notes: ${notes}\n` : ''
     }Please confirm availability and preparation time.`;
     const url = `https://wa.me/${RESTAURANT_INFO.whatsappInternational}?text=${encodeURIComponent(text)}`;
@@ -29,8 +39,14 @@ export const FoodDetailModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale">
-      <div className="relative w-full max-w-2xl bg-gradient-to-b from-brand-surfaceCard to-brand-charcoal rounded-3xl border border-brand-goldenYellow/35 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+    <div
+      onClick={() => setSelectedFoodModal(null)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-gradient-to-b from-brand-surfaceCard to-brand-charcoal rounded-3xl border border-brand-goldenYellow/35 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+      >
         
         {/* Close Button */}
         <button
@@ -89,7 +105,7 @@ export const FoodDetailModal: React.FC = () => {
             <div className="text-right flex-shrink-0">
               <span className="text-xs text-brand-warmCream/60 block">Price</span>
               <span className="font-display text-2xl sm:text-3xl font-black text-gradient-gold">
-                ${item.price}.00
+                {formatPrice(item.price)}
               </span>
             </div>
           </div>
@@ -167,7 +183,7 @@ export const FoodDetailModal: React.FC = () => {
               className="flex-1 sm:flex-none px-6 py-3 rounded-full bg-gradient-to-r from-brand-goldenYellow via-brand-burntOrange to-brand-goldenYellow text-brand-charcoal font-heading font-black text-xs uppercase tracking-wider shadow-glow-yellow hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>Add to Cart • ${totalPrice}.00</span>
+              <span>Add to Cart • {formatPrice(totalPrice)}</span>
             </button>
           </div>
         </div>

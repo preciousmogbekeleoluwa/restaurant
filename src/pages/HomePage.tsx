@@ -42,7 +42,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     setIsReservationOpen,
     setIsTrackingOpen,
     setIsVipOpen,
-    setIsReviewOpen
+    setIsReviewOpen,
+    testimonials
   } = useCart();
 
   // Filter menu items by category or favorites
@@ -512,7 +513,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t) => (
+            {testimonials.slice(0, 6).map((t) => (
               <div
                 key={t.id}
                 className="p-8 rounded-3xl bg-brand-surfaceCard border border-brand-goldenYellow/20 hover:border-brand-goldenYellow transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xl"

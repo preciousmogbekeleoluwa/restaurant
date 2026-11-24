@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { MENU_ITEMS } from '../data/restaurantData';
 import { X, Star, Send, Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ReviewModal: React.FC = () => {
-  const { isReviewOpen, setIsReviewOpen, showToast } = useCart();
+  const { isReviewOpen, setIsReviewOpen, showToast, addReview } = useCart();
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [name, setName] = useState('');
   const [favoriteDish, setFavoriteDish] = useState(MENU_ITEMS[0].name);
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsReviewOpen(false);
+    };
+    if (isReviewOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isReviewOpen, setIsReviewOpen]);
 
   if (!isReviewOpen) return null;
 
@@ -22,6 +32,13 @@ export const ReviewModal: React.FC = () => {
       return;
     }
 
+    addReview({
+      name: name.trim(),
+      content: comment.trim(),
+      rating,
+      favoriteDish,
+    });
+
     setSubmitted(true);
     confetti({
       particleCount: 100,
@@ -30,7 +47,7 @@ export const ReviewModal: React.FC = () => {
       colors: ['#F5A900', '#E87516', '#F5E9D2', '#FFFFFF'],
     });
 
-    showToast('Thank you for your review! 🌟');
+    showToast('Thank you for your review! 🌟 Added to community impressions.');
     setTimeout(() => {
       setSubmitted(false);
       setName('');
@@ -40,11 +57,17 @@ export const ReviewModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden my-8">
+    <div
+      onClick={() => setIsReviewOpen(false)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+      >
         
         {/* Header */}
-        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between">
+        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-brand-surfaceCard border border-brand-goldenYellow/40 flex items-center justify-center text-brand-goldenYellow">
               <Star className="w-5 h-5 fill-brand-goldenYellow" />
@@ -62,13 +85,14 @@ export const ReviewModal: React.FC = () => {
           <button
             onClick={() => setIsReviewOpen(false)}
             className="p-2 rounded-full bg-brand-surfaceCard text-brand-warmCream hover:text-brand-goldenYellow transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
           {submitted ? (
             <div className="text-center py-8 space-y-3">
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto text-emerald-400">

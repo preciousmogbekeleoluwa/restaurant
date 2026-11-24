@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { OrderStatus } from '../types';
 import { RESTAURANT_INFO } from '../data/restaurantData';
@@ -7,6 +7,16 @@ import { X, Search, CheckCircle2, Clock, ChefHat, Truck, ShoppingBag, MapPin, Ph
 export const OrderTrackerModal: React.FC = () => {
   const { isTrackingOpen, setIsTrackingOpen, trackedOrder, trackOrderById, recentOrders } = useCart();
   const [searchInput, setSearchInput] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsTrackingOpen(false);
+    };
+    if (isTrackingOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTrackingOpen, setIsTrackingOpen]);
 
   if (!isTrackingOpen) return null;
 
@@ -41,11 +51,17 @@ export const OrderTrackerModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden my-8">
+    <div
+      onClick={() => setIsTrackingOpen(false)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-xl bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+      >
         
         {/* Modal Top Header */}
-        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between">
+        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-brand-surfaceCard border border-brand-goldenYellow/35 flex items-center justify-center text-brand-goldenYellow">
               <Truck className="w-5 h-5" />
@@ -63,13 +79,14 @@ export const OrderTrackerModal: React.FC = () => {
           <button
             onClick={() => setIsTrackingOpen(false)}
             className="p-2 rounded-full bg-brand-surfaceCard text-brand-warmCream hover:text-brand-goldenYellow transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
           
           {/* Order Reference Search */}
           <form onSubmit={handleSearch} className="flex gap-2">

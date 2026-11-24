@@ -95,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                   <button
                     key={link.page}
                     onClick={() => handleNavClick(link.page)}
-                    className={`relative px-4 py-1.5 rounded-full font-heading text-xs uppercase tracking-wider font-bold transition-all duration-200 ${
+                    className={`relative px-3.5 py-1.5 rounded-full font-heading text-xs uppercase tracking-wider font-bold whitespace-nowrap transition-all duration-200 ${
                       isActive
                         ? 'text-brand-charcoal bg-gradient-to-r from-brand-goldenYellow to-brand-burntOrange shadow-glow-yellow'
                         : 'text-brand-warmCream/80 hover:text-brand-goldenYellow hover:bg-white/5'
@@ -108,13 +108,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             </nav>
 
             {/* Right Web App Actions Bar */}
-            <div className="flex items-center space-x-2 sm:space-x-2.5">
+            <div className="flex items-center space-x-1.5 sm:space-x-2.5">
               
               {/* Currency Selector Pill */}
               <div className="relative hidden sm:block">
                 <button
                   onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
-                  className="px-2.5 py-1.5 rounded-full bg-brand-surfaceCard border border-brand-goldenYellow/25 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-mono font-bold flex items-center gap-1 transition-colors"
+                  className="px-2.5 py-1.5 rounded-full bg-brand-surfaceCard border border-brand-goldenYellow/25 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-mono font-bold flex items-center gap-1 transition-colors whitespace-nowrap"
                   title="Switch Currency"
                 >
                   <Globe className="w-3.5 h-3.5" />
@@ -144,31 +144,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               {/* Table Booking Concierge Button (Desktop) */}
               <button
                 onClick={() => setIsReservationOpen(true)}
-                className="hidden xl:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-burntOrange/20 border border-brand-goldenYellow/30 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-heading font-bold uppercase tracking-wider transition-all"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-burntOrange/20 border border-brand-goldenYellow/30 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-heading font-bold uppercase tracking-wider whitespace-nowrap transition-all"
                 title="Book a Table"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Reserve Table</span>
               </button>
 
-              {/* Live Order Tracker Trigger (Desktop) */}
-              <button
-                onClick={() => setIsTrackingOpen(true)}
-                className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-surfaceMuted border border-brand-goldenYellow/20 hover:border-brand-goldenYellow text-brand-warmCream hover:text-brand-goldenYellow text-xs font-heading font-medium transition-colors"
-                title="Track Live Order"
-              >
-                <Truck className="w-3.5 h-3.5 text-brand-goldenYellow" />
-                <span>Track</span>
-              </button>
-
               {/* VIP Club Modal Trigger */}
               <button
                 onClick={() => setIsVipOpen(true)}
-                className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-burntOrange/20 border border-brand-goldenYellow/25 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-heading font-bold transition-all"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-burntOrange/20 border border-brand-goldenYellow/25 hover:border-brand-goldenYellow text-brand-goldenYellow text-xs font-heading font-bold whitespace-nowrap transition-all"
                 title="VIP Club Rewards"
               >
                 <Crown className="w-3.5 h-3.5" />
                 <span>VIP Club</span>
+              </button>
+
+              {/* Live Order Tracker Trigger (Desktop) */}
+              <button
+                onClick={() => setIsTrackingOpen(true)}
+                className="hidden 2xl:inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-brand-surfaceCard hover:bg-brand-surfaceMuted border border-brand-goldenYellow/20 hover:border-brand-goldenYellow text-brand-warmCream hover:text-brand-goldenYellow text-xs font-heading font-medium whitespace-nowrap transition-colors"
+                title="Track Live Order"
+              >
+                <Truck className="w-3.5 h-3.5 text-brand-goldenYellow" />
+                <span>Track</span>
               </button>
 
               {/* Favorites Counter Badge (Desktop) */}
@@ -202,7 +202,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               {/* Prominent Order Now CTA */}
               <button
                 onClick={() => handleNavClick('services')}
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-heading font-black text-xs uppercase tracking-wider bg-gradient-to-r from-brand-goldenYellow via-brand-burntOrange to-brand-goldenYellow text-brand-charcoal shadow-glow-yellow hover:scale-105 active:scale-95 transition-all duration-200"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-heading font-black text-xs uppercase tracking-wider whitespace-nowrap bg-gradient-to-r from-brand-goldenYellow via-brand-burntOrange to-brand-goldenYellow text-brand-charcoal shadow-glow-yellow hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <span>Order Now</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-brand-charcoal" />

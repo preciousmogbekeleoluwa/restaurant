@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { X, CreditCard, Landmark, CheckCircle2, ShieldCheck, Sparkles, Copy, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 
 export const PaystackModal: React.FC = () => {
-  const { isPaystackOpen, setIsPaystackOpen, totalAmount, clearCart, showToast } = useCart();
+  const { isPaystackOpen, setIsPaystackOpen, totalAmount, clearCart, showToast, formatPrice } = useCart();
   const [activeTab, setActiveTab] = useState<'card' | 'transfer'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderReference, setOrderReference] = useState('');
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsPaystackOpen(false);
+    };
+    if (isPaystackOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPaystackOpen, setIsPaystackOpen]);
 
   // Form states
   const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
@@ -52,11 +62,17 @@ export const PaystackModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col">
+    <div
+      onClick={() => setIsPaystackOpen(false)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+      >
         
         {/* Modal Top Banner */}
-        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between">
+        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-brand-surfaceCard border border-brand-goldenYellow/30 text-brand-goldenYellow">
               <CreditCard className="w-5 h-5" />
@@ -74,13 +90,14 @@ export const PaystackModal: React.FC = () => {
           <button
             onClick={() => setIsPaystackOpen(false)}
             className="p-2 rounded-full bg-brand-surfaceCard text-brand-warmCream hover:text-brand-goldenYellow transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto">
           {isSuccess ? (
             /* Success State */
             <div className="text-center py-6 space-y-4">
@@ -218,7 +235,7 @@ export const PaystackModal: React.FC = () => {
                     <p>Account Number: <strong>0123456789</strong></p>
                   </div>
                   <p className="text-[11px] text-brand-warmCream/60 leading-relaxed italic">
-                    Transfer the exact amount of ${totalAmount}.00, then click the button below to confirm.
+                    Transfer the exact amount of {formatPrice(totalAmount)}, then click the button below to confirm.
                   </p>
                 </div>
               )}
@@ -237,7 +254,7 @@ export const PaystackModal: React.FC = () => {
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    <span>Authorize Payment of ${totalAmount}.00</span>
+                    <span>Authorize Payment of {formatPrice(totalAmount)}</span>
                   </>
                 )}
               </button>

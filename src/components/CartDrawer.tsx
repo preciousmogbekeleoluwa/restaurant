@@ -16,6 +16,7 @@ export const CartDrawer: React.FC = () => {
     isCartOpen,
     setIsCartOpen,
     setIsPaystackOpen,
+    formatPrice,
     generateWhatsAppOrderUrl,
   } = useCart();
 
@@ -125,7 +126,7 @@ export const CartDrawer: React.FC = () => {
                             {cartItem.item.name}
                           </h4>
                           <span className="text-xs text-brand-goldenYellow font-mono font-bold block mt-0.5">
-                            ${cartItem.item.price}.00
+                            {formatPrice(cartItem.item.price)}
                           </span>
                           {cartItem.specialInstructions && (
                             <span className="text-[11px] text-brand-warmCream/60 italic truncate block">
@@ -156,7 +157,7 @@ export const CartDrawer: React.FC = () => {
                             </div>
 
                             <span className="text-xs font-mono font-semibold text-brand-warmCream/90 ml-auto">
-                              ${itemTotal}.00
+                              {formatPrice(itemTotal)}
                             </span>
 
                             <button
@@ -213,23 +214,23 @@ export const CartDrawer: React.FC = () => {
               <div className="space-y-1.5 text-xs text-brand-warmCream/80">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span className="font-mono font-semibold text-brand-warmCream">${subtotal}.00</span>
+                  <span className="font-mono font-semibold text-brand-warmCream">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Delivery:</span>
                   <span className="font-mono font-semibold text-brand-warmCream">
-                    {deliveryFee === 0 ? 'FREE' : `$${deliveryFee}.00`}
+                    {deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee)}
                   </span>
                 </div>
                 {deliveryFee === 0 && (
                   <span className="text-[10px] text-emerald-400 block font-semibold">
-                    ✨ Free delivery applied (orders $70+)!
+                    ✨ Free delivery applied!
                   </span>
                 )}
                 <div className="flex justify-between pt-2 border-t border-brand-goldenYellow/20 text-sm font-bold text-brand-goldenYellow">
                   <span>Total Amount:</span>
                   <span className="font-display text-2xl font-black text-gradient-gold">
-                    ${totalAmount}.00
+                    {formatPrice(totalAmount)}
                   </span>
                 </div>
               </div>

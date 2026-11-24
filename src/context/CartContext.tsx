@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { MenuItem, CartItem, CurrencyCode, TableReservation, OrderStatus } from '../types';
-import { RESTAURANT_INFO } from '../data/restaurantData';
+import { MenuItem, CartItem, CurrencyCode, TableReservation, OrderStatus, Testimonial } from '../types';
+import { RESTAURANT_INFO, TESTIMONIALS } from '../data/restaurantData';
 
 interface CartContextType {
   // Cart operations
@@ -48,6 +48,10 @@ interface CartContextType {
   setIsVipOpen: (open: boolean) => void;
   isReviewOpen: boolean;
   setIsReviewOpen: (open: boolean) => void;
+
+  // Testimonials / Reviews
+  testimonials: Testimonial[];
+  addReview: (review: { name: string; content: string; rating: number; favoriteDish: string }) => void;
 
   // PWA Install Prompt
   canInstallPwa: boolean;
@@ -140,6 +144,36 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [isVipOpen, setIsVipOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+
+  // Testimonials state persisted to localStorage
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
+    try {
+      const saved = localStorage.getItem('pretodan_reviews');
+      return saved ? JSON.parse(saved) : TESTIMONIALS;
+    } catch {
+      return TESTIMONIALS;
+    }
+  });
+
+  const addReview = (reviewData: { name: string; content: string; rating: number; favoriteDish: string }) => {
+    const newReview: Testimonial = {
+      id: `rev-${Date.now()}`,
+      name: reviewData.name,
+      role: 'Verified Guest',
+      location: 'Pretodan Dining Guest',
+      content: reviewData.content,
+      rating: reviewData.rating,
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      favoriteDish: reviewData.favoriteDish,
+    };
+    setTestimonials((prev) => {
+      const updated = [newReview, ...prev];
+      try {
+        localStorage.setItem('pretodan_reviews', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
 
   // PWA Install prompt event
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -387,6 +421,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsVipOpen,
         isReviewOpen,
         setIsReviewOpen,
+        testimonials,
+        addReview,
         canInstallPwa,
         promptPwaInstall,
         toastMessage,

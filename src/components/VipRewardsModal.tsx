@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { X, Crown, Sparkles, Gift, Tag, Check, Copy, Award, ShieldCheck } from 'lucide-react';
 
 export const VipRewardsModal: React.FC = () => {
   const { isVipOpen, setIsVipOpen, showToast } = useCart();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsVipOpen(false);
+    };
+    if (isVipOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVipOpen, setIsVipOpen]);
 
   if (!isVipOpen) return null;
 
@@ -47,11 +57,17 @@ export const VipRewardsModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden my-8">
+    <div
+      onClick={() => setIsVipOpen(false)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+      >
         
         {/* Modal Top Header */}
-        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between">
+        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-brand-surfaceCard border border-brand-goldenYellow/40 flex items-center justify-center text-brand-goldenYellow">
               <Crown className="w-5 h-5" />
@@ -69,13 +85,14 @@ export const VipRewardsModal: React.FC = () => {
           <button
             onClick={() => setIsVipOpen(false)}
             className="p-2 rounded-full bg-brand-surfaceCard text-brand-warmCream hover:text-brand-goldenYellow transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
           
           {/* Member Tier Card */}
           <div className="p-6 rounded-3xl bg-gradient-to-br from-brand-charcoal via-brand-surfaceCard to-brand-charcoal border-2 border-brand-goldenYellow/40 relative overflow-hidden shadow-glow-yellow space-y-4">

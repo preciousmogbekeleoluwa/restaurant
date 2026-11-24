@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { TableReservation } from '../types';
 import { RESTAURANT_INFO } from '../data/restaurantData';
@@ -7,6 +7,16 @@ import confetti from 'canvas-confetti';
 
 export const ReservationModal: React.FC = () => {
   const { isReservationOpen, setIsReservationOpen, activeReservation, saveReservation } = useCart();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsReservationOpen(false);
+    };
+    if (isReservationOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isReservationOpen, setIsReservationOpen]);
   
   const [formData, setFormData] = useState({
     guestName: '',
@@ -108,11 +118,17 @@ export const ReservationModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden my-8">
+    <div
+      onClick={() => setIsReservationOpen(false)}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-charcoal/85 backdrop-blur-md animate-fade-scale overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-gradient-to-b from-brand-surfaceCard via-brand-charcoal to-brand-surfaceCard rounded-3xl border border-brand-goldenYellow/40 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+      >
         
         {/* Modal Header */}
-        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between">
+        <div className="p-6 bg-brand-charcoal border-b border-brand-goldenYellow/20 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-brand-surfaceCard border border-brand-goldenYellow/35 flex items-center justify-center text-brand-goldenYellow">
               <Calendar className="w-5 h-5" />
