@@ -3,7 +3,23 @@ import { SERVICES_LIST, MENU_ITEMS, RESTAURANT_INFO, FOOD_CATEGORIES } from '../
 import { PageRoute, MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import { DrippingSauceHeader } from '../components/DrippingSauceHeader';
-import { Sparkles, Flame, Plus, Search, MessageCircle, ShoppingBag, ArrowRight, Clock, Check, Filter, Utensils, PhoneCall, Calendar } from 'lucide-react';
+import {
+  Sparkles,
+  Flame,
+  Plus,
+  Search,
+  MessageCircle,
+  ShoppingBag,
+  ArrowRight,
+  Clock,
+  Check,
+  Filter,
+  Utensils,
+  PhoneCall,
+  Calendar,
+  Heart,
+  Eye
+} from 'lucide-react';
 
 interface ServicesPageProps {
   onNavigate: (page: PageRoute) => void;
@@ -12,14 +28,32 @@ interface ServicesPageProps {
 export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const { addToCart, setSelectedFoodModal, setIsCartOpen } = useCart();
+  const {
+    addToCart,
+    setSelectedFoodModal,
+    setIsCartOpen,
+    formatPrice,
+    favorites,
+    toggleFavorite,
+    isFavorite,
+    setIsReservationOpen,
+    setIsTrackingOpen
+  } = useCart();
 
-  // Filter menu items by category and search
+  // Filter menu items by category and search, or favorites
   const filteredMenuItems = MENU_ITEMS.filter((item) => {
-    const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          item.categoryLabel.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      activeCategory === 'all'
+        ? true
+        : activeCategory === 'favorites'
+        ? favorites.includes(item.id)
+        : item.category === activeCategory;
+
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.categoryLabel.toLowerCase().includes(searchQuery.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 
@@ -33,8 +67,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
     { id: 'specialties', label: 'Continental Specialties' },
   ];
 
-  const handleServiceAction = (serviceTitle: string, ctaText: string) => {
-    if (ctaText.toLowerCase().includes('order')) {
+  const handleServiceAction = (serviceId: string, serviceTitle: string, ctaText: string) => {
+    if (serviceId === 'serv-dinein' || serviceId === 'serv-private') {
+      setIsReservationOpen(true);
+    } else if (ctaText.toLowerCase().includes('order')) {
       setIsCartOpen(true);
     } else {
       onNavigate('contact');
@@ -129,7 +165,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                   {/* CTA Action */}
                   <div className="pt-4 border-t border-brand-goldenYellow/15">
                     <button
-                      onClick={() => handleServiceAction(service.title, service.ctaText)}
+                      onClick={() => handleServiceAction(service.id, service.title, service.ctaText)}
                       className="w-full py-2.5 px-4 rounded-full bg-brand-charcoal hover:bg-brand-burntOrange border border-brand-goldenYellow/40 hover:border-brand-goldenYellow text-brand-goldenYellow hover:text-white font-heading font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
                     >
                       <span>{service.ctaText}</span>
@@ -150,7 +186,6 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-brand-surfaceCard border border-brand-goldenYellow/30 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
             
-            {/* Background glowing gradient */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-brand-burntOrange/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-brand-goldenYellow/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -188,6 +223,15 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                     <MessageCircle className="w-4 h-4" />
                     <span>Order via WhatsApp</span>
                   </button>
+
+                  {/* Table Reservation Button */}
+                  <button
+                    onClick={() => setIsReservationOpen(true)}
+                    className="px-6 py-4 rounded-full bg-brand-charcoal border border-brand-goldenYellow text-brand-goldenYellow hover:bg-brand-burntOrange hover:text-white font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Book a Table</span>
+                  </button>
                 </div>
               </div>
 
@@ -207,11 +251,11 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-brand-goldenYellow shrink-0" />
-                    <span>Customizable dietary requests</span>
+                    <span>Multi-currency checkout (USD, EUR, GBP, NGN)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-brand-goldenYellow shrink-0" />
-                    <span>Card, transfer, & cash options</span>
+                    <span>Live order tracking stepper</span>
                   </div>
                 </div>
                 <div className="pt-2 border-t border-brand-goldenYellow/20 text-brand-goldenYellow font-bold">
@@ -273,6 +317,21 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                   </button>
                 );
               })}
+
+              {/* Favorites Filter Tab */}
+              {favorites.length > 0 && (
+                <button
+                  onClick={() => setActiveCategory('favorites')}
+                  className={`px-4 sm:px-5 py-2 rounded-full font-heading text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 ${
+                    activeCategory === 'favorites'
+                      ? 'bg-brand-burntOrange text-white shadow-glow-orange scale-105'
+                      : 'bg-brand-surfaceCard text-brand-warmCream/80 hover:text-brand-burntOrange border border-brand-goldenYellow/20'
+                  }`}
+                >
+                  <Heart className="w-3.5 h-3.5 fill-current" />
+                  <span>Favorites ({favorites.length})</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -281,7 +340,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
             {filteredMenuItems.map((dish) => (
               <div
                 key={dish.id}
-                className="group rounded-3xl bg-brand-surfaceCard border border-brand-goldenYellow/20 hover:border-brand-goldenYellow overflow-hidden shadow-menu-card hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+                className="group rounded-3xl bg-brand-surfaceCard border border-brand-goldenYellow/20 hover:border-brand-goldenYellow overflow-hidden shadow-menu-card hover:shadow-2xl transition-all duration-300 flex flex-col justify-between relative"
               >
                 <div className="relative h-60 overflow-hidden bg-brand-charcoal">
                   <img
@@ -294,11 +353,37 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-brand-charcoal/85 backdrop-blur-md border border-brand-goldenYellow/40 text-[10px] font-bold text-brand-goldenYellow uppercase tracking-wider">
                     {dish.categoryLabel}
                   </span>
+
+                  {/* Favorite Toggle Button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(dish.id); }}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-brand-charcoal/80 hover:bg-brand-charcoal text-brand-goldenYellow hover:scale-110 active:scale-90 transition-all shadow-md z-10"
+                    title={isFavorite(dish.id) ? "Remove from Favorites" : "Add to Favorites"}
+                    aria-label={`Favorite ${dish.name}`}
+                  >
+                    <Heart
+                      className={`w-4 h-4 transition-colors ${
+                        isFavorite(dish.id)
+                          ? 'fill-brand-burntOrange text-brand-burntOrange'
+                          : 'text-brand-warmCream hover:text-brand-goldenYellow'
+                      }`}
+                    />
+                  </button>
+
                   {dish.discountBadge && (
-                    <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-brand-burntOrange to-brand-goldenYellow text-brand-charcoal font-black text-[10px] uppercase tracking-wider shadow-md">
+                    <span className="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-gradient-to-r from-brand-burntOrange to-brand-goldenYellow text-brand-charcoal font-black text-[10px] uppercase tracking-wider shadow-md">
                       {dish.discountBadge}
                     </span>
                   )}
+
+                  {/* Quick View */}
+                  <button
+                    onClick={() => setSelectedFoodModal(dish)}
+                    className="absolute bottom-4 right-4 p-2.5 rounded-full bg-brand-charcoal/90 text-brand-goldenYellow border border-brand-goldenYellow/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 shadow-lg"
+                    aria-label={`View details of ${dish.name}`}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -310,8 +395,9 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                       >
                         {dish.name}
                       </h3>
+                      {/* Dynamic Currency Formatted Price */}
                       <span className="font-display text-2xl font-black text-brand-goldenYellow shrink-0">
-                        ${dish.price}.00
+                        {formatPrice(dish.price)}
                       </span>
                     </div>
                     <p className="text-xs text-brand-warmCream/75 font-light leading-relaxed line-clamp-3">

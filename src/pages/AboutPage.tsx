@@ -1,14 +1,31 @@
 import React from 'react';
 import { PageRoute } from '../types';
 import { RESTAURANT_INFO, WHY_CHOOSE_US } from '../data/restaurantData';
+import { useCart } from '../context/CartContext';
 import { DrippingSauceHeader } from '../components/DrippingSauceHeader';
-import { Sparkles, Flame, ChefHat, Heart, Award, CheckCircle2, ArrowRight, MessageCircle, Utensils, ShieldCheck, HeartHandshake, ShoppingBag } from 'lucide-react';
+import {
+  Sparkles,
+  Flame,
+  ChefHat,
+  Heart,
+  Award,
+  CheckCircle2,
+  ArrowRight,
+  MessageCircle,
+  Utensils,
+  ShieldCheck,
+  HeartHandshake,
+  ShoppingBag,
+  Calendar
+} from 'lucide-react';
 
 interface AboutPageProps {
   onNavigate: (page: PageRoute) => void;
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
+  const { setIsReservationOpen } = useCart();
+
   return (
     <div className="min-h-screen bg-brand-charcoal text-brand-warmCream pt-20">
       
@@ -51,9 +68,18 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <ShoppingBag className="w-4 h-4" />
               <span>Explore Our Menu</span>
             </button>
+
+            <button
+              onClick={() => setIsReservationOpen(true)}
+              className="px-7 py-3.5 rounded-full bg-brand-surfaceCard border-2 border-brand-goldenYellow text-brand-goldenYellow hover:bg-brand-burntOrange hover:text-white font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Reserve a Table</span>
+            </button>
+
             <button
               onClick={() => onNavigate('contact')}
-              className="px-7 py-3.5 rounded-full bg-brand-surfaceCard border-2 border-brand-goldenYellow text-brand-goldenYellow hover:bg-brand-burntOrange hover:text-white font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2"
+              className="px-7 py-3.5 rounded-full bg-brand-charcoal border border-brand-goldenYellow/35 text-brand-warmCream hover:text-brand-goldenYellow font-heading font-medium text-sm transition-colors flex items-center gap-2"
             >
               <span>Contact Us</span>
               <ArrowRight className="w-4 h-4" />
@@ -231,7 +257,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 </p>
               </div>
             ))}
-            {/* Added 6th Value */}
+            {/* 6th Value */}
             <div className="p-6 rounded-2xl bg-brand-surfaceCard border border-brand-goldenYellow/20 hover:border-brand-goldenYellow transition-all space-y-3">
               <h4 className="font-heading font-black text-lg text-brand-goldenYellow">
                 Continuous Culinary Innovation
@@ -262,10 +288,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <span>Explore Our Menu</span>
             </button>
             <button
-              onClick={() => onNavigate('contact')}
+              onClick={() => setIsReservationOpen(true)}
               className="px-8 py-4 rounded-full bg-brand-surfaceCard border-2 border-brand-goldenYellow text-brand-goldenYellow hover:bg-brand-burntOrange hover:text-white font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2"
             >
-              <span>Contact Us & Reservations</span>
+              <Calendar className="w-4 h-4" />
+              <span>Reserve a Table</span>
+            </button>
+            <button
+              onClick={() => onNavigate('contact')}
+              className="px-8 py-4 rounded-full bg-brand-charcoal border border-brand-goldenYellow/40 text-brand-warmCream hover:text-brand-goldenYellow font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+            >
+              <span>Contact & Directions</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

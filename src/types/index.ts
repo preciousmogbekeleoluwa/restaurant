@@ -4,7 +4,7 @@ export interface MenuItem {
   category: 'chicken' | 'beef' | 'pasta' | 'seafood' | 'rice' | 'specialties' | string;
   categoryLabel: string;
   description: string;
-  price: number; // formatted as $XX.00
+  price: number; // Base USD price
   image: string;
   popular?: boolean;
   isSpecialOffer?: boolean;
@@ -58,3 +58,38 @@ export interface HeroSlide {
 }
 
 export type PageRoute = 'home' | 'about' | 'services' | 'contact';
+
+export type CurrencyCode = 'USD' | 'EUR' | 'GBP' | 'NGN';
+
+export interface TableReservation {
+  id: string;
+  guestName: string;
+  email: string;
+  phone: string;
+  date: string;
+  timeSlot: string;
+  guestsCount: number;
+  seatingArea: string;
+  occasion: string;
+  specialRequests?: string;
+  createdAt: string;
+  status: 'confirmed' | 'pending' | 'seated';
+}
+
+export interface OrderStatus {
+  orderId: string;
+  status: 'received' | 'preparing' | 'plating' | 'dispatch' | 'delivered';
+  estimatedMinutes: number;
+  timestamp: string;
+  itemsCount: number;
+  totalFormatted: string;
+  deliveryAddress?: string;
+}
+
+export interface VipMember {
+  name: string;
+  tier: 'Silver Gourmet' | 'Gold Concierge' | 'Platinum Royal';
+  points: number;
+  nextTierPoints: number;
+  savedCoupons: string[];
+}

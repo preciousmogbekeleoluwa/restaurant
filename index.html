@@ -3,15 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>Pretodan Restaurant — Continental Fine Dining & Cuisine</title>
     <meta name="description" content="Discover extraordinary continental cuisine at Pretodan Restaurant. Freshly prepared with passion and served with excellence. Flame-grilled chicken, prime ribeye beef, artisan pasta, seafood, and continental specialties." />
+    
+    <!-- PWA & Mobile Web App Meta -->
     <meta name="theme-color" content="#171513" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pretodan" />
+    <meta name="application-name" content="Pretodan Restaurant" />
+    <meta name="format-detection" content="telephone=no" />
 
-    <!-- Open Graph / Meta -->
+    <!-- Open Graph / Social Meta -->
     <meta property="og:type" content="restaurant.restaurant" />
     <meta property="og:title" content="Pretodan Restaurant — Continental Fine Dining" />
     <meta property="og:description" content="Good Food. Great Moments. Only at Pretodan. Extraordinary continental dining, flame-grilled chicken, prime ribeyes, pastas, and fresh seafood." />
+    <meta property="og:image" content="/favicon.svg" />
     
     <!-- Google Fonts: Bebas Neue, Outfit, Playfair Display, Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,5 +31,16 @@
   <body class="bg-brand-charcoal text-brand-warmCream font-sans selection:bg-brand-burntOrange selection:text-white antialiased overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.log('SW registration skipped:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

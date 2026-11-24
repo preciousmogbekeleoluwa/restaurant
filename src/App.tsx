@@ -6,6 +6,12 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { FoodDetailModal } from './components/FoodDetailModal';
 import { PaystackModal } from './components/PaystackModal';
+import { ReservationModal } from './components/ReservationModal';
+import { OrderTrackerModal } from './components/OrderTrackerModal';
+import { VipRewardsModal } from './components/VipRewardsModal';
+import { ReviewModal } from './components/ReviewModal';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { PwaInstallBanner } from './components/PwaInstallBanner';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -36,7 +42,10 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-charcoal text-brand-warmCream selection:bg-brand-burntOrange selection:text-white">
+    <div className="min-h-screen flex flex-col bg-brand-charcoal text-brand-warmCream selection:bg-brand-burntOrange selection:text-white pb-16 md:pb-0">
+      {/* PWA Install Promotion Banner */}
+      <PwaInstallBanner />
+
       {/* Global Navbar */}
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
@@ -51,13 +60,20 @@ const MainAppContent: React.FC = () => {
       {/* Global Footer */}
       <Footer onNavigate={handleNavigate} />
 
-      {/* Overlays & Drawers */}
+      {/* Web App Interactive Modals & Drawers */}
       <CartDrawer />
       <FoodDetailModal />
       <PaystackModal />
+      <ReservationModal />
+      <OrderTrackerModal />
+      <VipRewardsModal />
+      <ReviewModal />
 
-      {/* Floating Action Buttons: WhatsApp Hotline & Scroll-to-Top */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
+      {/* Mobile App Bottom Navigation Dock */}
+      <MobileBottomNav currentPage={currentPage} onNavigate={handleNavigate} />
+
+      {/* Desktop Floating Action Buttons: WhatsApp Hotline & Scroll-to-Top */}
+      <div className="fixed bottom-6 right-6 z-30 hidden md:flex flex-col gap-3">
         {showScrollTop && (
           <button
             onClick={scrollToTop}
@@ -89,8 +105,8 @@ const MainAppContent: React.FC = () => {
 
       {/* Global Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3.5 rounded-full bg-brand-surfaceCard border-2 border-brand-goldenYellow text-brand-goldenYellow font-heading font-black text-xs sm:text-sm uppercase tracking-wider shadow-glow-yellow flex items-center gap-2.5 animate-slide-up">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-goldenYellow animate-ping" />
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3.5 rounded-full bg-brand-surfaceCard border-2 border-brand-goldenYellow text-brand-goldenYellow font-heading font-black text-xs sm:text-sm uppercase tracking-wider shadow-glow-yellow flex items-center gap-2.5 animate-slide-up max-w-[90vw] text-center">
+          <span className="w-2.5 h-2.5 rounded-full bg-brand-goldenYellow animate-ping shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
