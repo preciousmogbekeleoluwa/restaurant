@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { useCart } from '../context/CartContext';
 import { DrippingSauceHeader } from '../components/DrippingSauceHeader';
+import { restaurantApi } from '../services/api';
 import { Phone, MessageCircle, MapPin, Mail, Clock, Send, CheckCircle2, Sparkles, Navigation, AlertCircle, Instagram, Facebook, Twitter } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
@@ -16,6 +17,8 @@ export const ContactPage: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [ticketId, setTicketId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -31,7 +34,7 @@ export const ContactPage: React.FC = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -40,8 +43,20 @@ export const ContactPage: React.FC = () => {
     }
 
     setErrors({});
-    setSubmitted(true);
-    showToast('Your message has been received! Our team will contact you shortly.');
+    setIsSubmitting(true);
+
+    try {
+      const response = await restaurantApi.submitContact(formData);
+      if (response?.ticketId) {
+        setTicketId(response.ticketId);
+      }
+    } catch {
+      // Local fallback already handled in service
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      showToast('Your message has been received! Our team will contact you shortly.');
+    }
   };
 
   return (
@@ -192,12 +207,18 @@ export const ContactPage: React.FC = () => {
                   <h3 className="font-heading font-black text-xl text-emerald-400">
                     Thank You, {formData.fullName}!
                   </h3>
+                  {ticketId && (
+                    <div className="inline-block px-3 py-1 rounded-full bg-brand-charcoal border border-brand-goldenYellow/40 text-brand-goldenYellow font-mono text-xs font-bold">
+                      Reference Ticket: {ticketId}
+                    </div>
+                  )}
                   <p className="text-xs text-brand-warmCream/90 max-w-sm mx-auto leading-relaxed">
                     Your message regarding <strong>{formData.subject}</strong> has been received by the Pretodan Restaurant team. We will contact you at {formData.phone} or {formData.email}.
                   </p>
                   <button
                     onClick={() => {
                       setSubmitted(false);
+                      setTicketId(null);
                       setFormData({
                         fullName: '',
                         email: '',
@@ -323,10 +344,20 @@ export const ContactPage: React.FC = () => {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-brand-goldenYellow via-brand-burntOrange to-brand-goldenYellow text-brand-charcoal font-heading font-black text-sm uppercase tracking-wider shadow-glow-yellow hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-brand-goldenYellow via-brand-burntOrange to-brand-goldenYellow text-brand-charcoal font-heading font-black text-sm uppercase tracking-wider shadow-glow-yellow hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Submit Message</span>
+                    {isSubmitting ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-brand-charcoal border-t-transparent rounded-full animate-spin" />
+                        <span>Submitting to Kitchen Concierge...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Submit Message</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

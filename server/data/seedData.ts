@@ -1,0 +1,409 @@
+export interface BackendMenuItem {
+  id: string;
+  name: string;
+  category: string;
+  categoryLabel: string;
+  description: string;
+  price: number;
+  image: string;
+  popular?: boolean;
+  isSpecialOffer?: boolean;
+  discountBadge?: string;
+  spicyLevel?: number;
+  prepTime?: string;
+  tags?: string[];
+  calories?: string;
+}
+
+export interface BackendOrder {
+  orderId: string;
+  status: 'received' | 'preparing' | 'plating' | 'dispatch' | 'delivered';
+  customerName?: string;
+  customerPhone?: string;
+  deliveryAddress: string;
+  customerNotes?: string;
+  items: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    specialInstructions?: string;
+  }>;
+  itemsCount: number;
+  subtotal: number;
+  deliveryFee: number;
+  totalAmount: number;
+  totalFormatted: string;
+  paymentMethod: 'card' | 'bank_transfer' | 'whatsapp' | 'cash';
+  paymentStatus: 'paid' | 'pending';
+  estimatedMinutes: number;
+  timestamp: string;
+  createdAt: string;
+}
+
+export interface BackendReservation {
+  id: string;
+  guestName: string;
+  email: string;
+  phone: string;
+  date: string;
+  timeSlot: string;
+  guestsCount: number;
+  seatingArea: string;
+  occasion: string;
+  specialRequests?: string;
+  status: 'confirmed' | 'pending' | 'seated' | 'cancelled';
+  createdAt: string;
+}
+
+export interface BackendReview {
+  id: string;
+  name: string;
+  role: string;
+  location: string;
+  content: string;
+  rating: number;
+  avatar: string;
+  favoriteDish: string;
+  createdAt: string;
+}
+
+export interface BackendContactMessage {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read' | 'replied';
+  createdAt: string;
+}
+
+export interface BackendVipMember {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  tier: 'Gold Gourmet Concierge' | 'Platinum Royal';
+  points: number;
+  joinedAt: string;
+}
+
+export const INITIAL_MENU_ITEMS: BackendMenuItem[] = [
+  // 1. GRILLED CHICKEN
+  {
+    id: "chk-1",
+    name: "Flame-Grilled Herb Butter Half Chicken",
+    category: "chicken",
+    categoryLabel: "Grilled Chicken",
+    description: "Farm-fresh half chicken marinated for 24 hours in wild garlic, thyme, rosemary, and Dijon mustard, flame-grilled over charcoal and basted with foaming lemon-herb noisette butter.",
+    price: 32,
+    image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    spicyLevel: 1,
+    prepTime: "25 mins",
+    tags: ["Signature", "Charcoal Grill"],
+    calories: "680 kcal"
+  },
+  {
+    id: "chk-2",
+    name: "Pretodan Supreme Chicken Ballotine",
+    category: "chicken",
+    categoryLabel: "Grilled Chicken",
+    description: "Tender chicken breast filled with wild forest mushrooms, shallots, and spinach, wrapped in crisp prosciutto crudo, sliced over truffled potato velouté with reduction jus.",
+    price: 36,
+    image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "CHEF'S SIGNATURE",
+    spicyLevel: 0,
+    prepTime: "20 mins",
+    tags: ["French Classic", "Chef Favorite"],
+    calories: "590 kcal"
+  },
+  {
+    id: "chk-3",
+    name: "Spiced Piri-Piri Glazed Spatchcock Chicken",
+    category: "chicken",
+    categoryLabel: "Grilled Chicken",
+    description: "Whole spatchcocked spring chicken flame-roasted to golden perfection, glazed with our house smoked piri-piri reduction, charred sweetcorn, and hand-cut herb chips.",
+    price: 38,
+    image: "https://images.unsplash.com/photo-1527477378370-13f569d672ef?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 2,
+    prepTime: "30 mins",
+    tags: ["Spicy", "Charcoal Flame"],
+    calories: "740 kcal"
+  },
+
+  // 2. BEEF DISHES
+  {
+    id: "beef-1",
+    name: "Prime Aged Continental Ribeye Steak (350g)",
+    category: "beef",
+    categoryLabel: "Beef Dishes",
+    description: "28-day dry-aged Black Angus ribeye flame-seared on cast iron with crushed sea salt, rosemary, and cracked peppercorns, served with roasted marrow bone and truffled jus.",
+    price: 52,
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "BEST SELLER",
+    spicyLevel: 0,
+    prepTime: "25-35 mins",
+    tags: ["Prime Steak", "Dry Aged"],
+    calories: "850 kcal"
+  },
+  {
+    id: "beef-2",
+    name: "Filet Mignon au Poivre",
+    category: "beef",
+    categoryLabel: "Beef Dishes",
+    description: "Center-cut beef tenderloin medallion crusted with cracked Madagascar green peppercorns, flambéed with cognac, and finished in a Dijon cream sauce with glazed baby carrots.",
+    price: 48,
+    image: "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    spicyLevel: 1,
+    prepTime: "30 mins",
+    tags: ["French Classic", "Luxury"],
+    calories: "720 kcal"
+  },
+  {
+    id: "beef-3",
+    name: "Slow-Braised Beef Short Ribs",
+    category: "beef",
+    categoryLabel: "Beef Dishes",
+    description: "Tender bone-in beef short ribs slow-braised for six hours in rich Cabernet Sauvignon stock with aromatics until melt-in-your-mouth tender, served over creamy polenta.",
+    price: 45,
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 0,
+    prepTime: "25 mins",
+    tags: ["Slow Braised", "Hearty"],
+    calories: "890 kcal"
+  },
+
+  // 3. PASTA
+  {
+    id: "pas-1",
+    name: "Creamy Truffle & Seafood Fettuccine",
+    category: "pasta",
+    categoryLabel: "Pasta",
+    description: "Hand-rolled egg fettuccine tossed in a silky black truffle and aged Parmigiano-Reggiano emulsion, loaded with pan-seared tiger prawns, sweet bay scallops, and Italian flat-leaf parsley.",
+    price: 45,
+    image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "CHEF'S SPECIAL",
+    spicyLevel: 0,
+    prepTime: "20 mins",
+    tags: ["Italian Pasta", "Truffle"],
+    calories: "680 kcal"
+  },
+  {
+    id: "pas-2",
+    name: "Slow-Cooked Beef Ragu Pappardelle",
+    category: "pasta",
+    categoryLabel: "Pasta",
+    description: "Wide ribbon pappardelle pasta draped in a rich Bolognese ragu of braised beef brisket, San Marzano plum tomatoes, Chianti wine, and freshly grated Pecorino Romano cheese.",
+    price: 36,
+    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 0,
+    prepTime: "20 mins",
+    tags: ["Artisan Ragu", "Comfort Food"],
+    calories: "740 kcal"
+  },
+  {
+    id: "pas-3",
+    name: "Spaghetti alle Vongole e Gamberi",
+    category: "pasta",
+    categoryLabel: "Pasta",
+    description: "Artisan bronze-die spaghetti tossed with tender clams and succulent shrimp in an aromatic emulsion of extra virgin olive oil, garlic, white wine, chili flakes, and fresh lemon zest.",
+    price: 39,
+    image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 1,
+    prepTime: "18 mins",
+    tags: ["Mediterranean", "Seafood Pasta"],
+    calories: "580 kcal"
+  },
+
+  // 4. SEAFOOD
+  {
+    id: "sea-1",
+    name: "Pan-Seared Atlantic Salmon Fillet",
+    category: "seafood",
+    categoryLabel: "Seafood",
+    description: "Crispy-skinned Norwegian Atlantic salmon fillet served over a bed of saffron risotto, sautéed baby asparagus spears, and a silky Meyer lemon and caper beurre blanc.",
+    price: 44,
+    image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    spicyLevel: 0,
+    prepTime: "20 mins",
+    tags: ["Fresh Catch", "Healthy Choice"],
+    calories: "620 kcal"
+  },
+  {
+    id: "sea-2",
+    name: "Grilled Jumbo Tiger Prawns Thermidor",
+    category: "seafood",
+    categoryLabel: "Seafood",
+    description: "Four ocean-caught jumbo tiger prawns split and broiled with a rich cognac, Dijon mustard, tarragon, and Gruyère cheese glaze, served with garlic herb flatbread.",
+    price: 49,
+    image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "SEAFOOD PLATTER",
+    spicyLevel: 0,
+    prepTime: "22 mins",
+    tags: ["Luxury Seafood", "Jumbo Prawns"],
+    calories: "510 kcal"
+  },
+
+  // 5. RICE DISHES
+  {
+    id: "rice-1",
+    name: "Continental Seafood Paella Valenciana",
+    category: "rice",
+    categoryLabel: "Rice Dishes",
+    description: "Authentic Bomba rice infused with Spanish saffron threads, simmered in rich crustacean fumet with jumbo prawns, calamari rings, Mediterranean black mussels, and sweet peas.",
+    price: 46,
+    image: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "CHEF SPECIALTY",
+    spicyLevel: 1,
+    prepTime: "30 mins",
+    tags: ["Spanish Classic", "Saffron Rice"],
+    calories: "710 kcal"
+  },
+  {
+    id: "rice-2",
+    name: "Wild Forest Mushroom & Truffle Risotto",
+    category: "rice",
+    categoryLabel: "Rice Dishes",
+    description: "Slow-stirred Carnaroli rice with porcini, morel, and chanterelle mushrooms, finished with cold butter, 24-month Parmigiano-Reggiano, and white truffle oil drops.",
+    price: 38,
+    image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 0,
+    prepTime: "25 mins",
+    tags: ["Vegetarian", "Truffle Aroma"],
+    calories: "540 kcal"
+  },
+
+  // 6. CONTINENTAL SPECIALTIES
+  {
+    id: "spec-1",
+    name: "Classic Herb-Crusted Rack of Lamb",
+    category: "specialties",
+    categoryLabel: "Continental Specialties",
+    description: "Four-bone French-trimmed New Zealand lamb rack coated in Dijon mustard and a fragrant crust of rosemary, thyme, garlic, and brioche crumbs. Served with dauphinoise potatoes.",
+    price: 54,
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    popular: true,
+    isSpecialOffer: true,
+    discountBadge: "SIGNATURE CUT",
+    spicyLevel: 0,
+    prepTime: "30-40 mins",
+    tags: ["Fine Dining", "Tender Lamb"],
+    calories: "820 kcal"
+  },
+  {
+    id: "spec-2",
+    name: "Crispy Skin Duck Breast à l'Orange",
+    category: "specialties",
+    categoryLabel: "Continental Specialties",
+    description: "Pan-roasted Moulard duck breast scored and rendered crispy, served pink with a bittersweet Grand Marnier Seville orange glaze, braised red cabbage, and parsnip purée.",
+    price: 47,
+    image: "https://images.unsplash.com/photo-1514944298352-1fc5500e84ec?auto=format&fit=crop&w=800&q=80",
+    spicyLevel: 0,
+    prepTime: "25 mins",
+    tags: ["French Classic", "Heritage Duck"],
+    calories: "760 kcal"
+  }
+];
+
+export const INITIAL_REVIEWS: BackendReview[] = [
+  {
+    id: "rev-1",
+    name: "Eleanor Vance",
+    role: "Culinary Writer & Gastronomy Editor",
+    location: "Sample Review • Verified Guest",
+    content: "The Prime Ribeye at Pretodan is simply phenomenal — seared to perfection with incredible tenderness. The ambiance, with its elegant charcoal and gold aesthetic, feels truly world-class.",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    favoriteDish: "Prime Aged Continental Ribeye Steak",
+    createdAt: "2026-11-20"
+  },
+  {
+    id: "rev-2",
+    name: "Marcus Sterling",
+    role: "Architect & Corporate Host",
+    location: "Sample Review • Verified Guest",
+    content: "We reserved Pretodan for our firm's executive dinner. The seafood paella and herb-crusted rack of lamb received unanimous praise. Their service is remarkably attentive and polished.",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    favoriteDish: "Continental Seafood Paella Valenciana",
+    createdAt: "2026-11-21"
+  },
+  {
+    id: "rev-3",
+    name: "Sophia Kensington",
+    role: "Private Client & Food Enthusiast",
+    location: "Sample Review • Verified Guest",
+    content: "The delivery service is immaculate. Our meals arrived piping hot, exquisitely plated, and bursting with flavor. The WhatsApp ordering process made the entire experience seamless.",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    favoriteDish: "Pan-Seared Atlantic Salmon Fillet",
+    createdAt: "2026-11-22"
+  }
+];
+
+export const INITIAL_ORDERS: BackendOrder[] = [
+  {
+    orderId: "PRETO-849201",
+    status: "preparing",
+    customerName: "Vivienne Montgomery",
+    customerPhone: "+1 (555) 234-8901",
+    deliveryAddress: "123 Grand Continental Boulevard, Suite 4B",
+    customerNotes: "Medium-rare ribeye, extra rosemary butter on side",
+    items: [
+      {
+        id: "beef-1",
+        name: "Prime Aged Continental Ribeye Steak (350g)",
+        price: 52,
+        quantity: 1,
+        specialInstructions: "Medium-rare"
+      },
+      {
+        id: "pas-1",
+        name: "Creamy Truffle & Seafood Fettuccine",
+        price: 45,
+        quantity: 1
+      }
+    ],
+    itemsCount: 2,
+    subtotal: 97,
+    deliveryFee: 0,
+    totalAmount: 97,
+    totalFormatted: "$97.00",
+    paymentMethod: "card",
+    paymentStatus: "paid",
+    estimatedMinutes: 20,
+    timestamp: "Today, 7:15 PM",
+    createdAt: new Date().toISOString()
+  }
+];
+
+export const INITIAL_RESERVATIONS: BackendReservation[] = [
+  {
+    id: "TBL-729401",
+    guestName: "Lord Julian Sterling",
+    email: "julian.sterling@example.com",
+    phone: "+1 (555) 782-9012",
+    date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    timeSlot: "8:00 PM",
+    guestsCount: 4,
+    seatingArea: "Private VIP Suite",
+    occasion: "Anniversary Celebration",
+    specialRequests: "Window alcove table with champagne flute setup",
+    status: "confirmed",
+    createdAt: new Date().toISOString()
+  }
+];

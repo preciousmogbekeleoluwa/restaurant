@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MenuItem, CartItem, CurrencyCode, TableReservation, OrderStatus, Testimonial } from '../types';
 import { RESTAURANT_INFO, TESTIMONIALS } from '../data/restaurantData';
+import { restaurantApi } from '../services/api';
 
 interface CartContextType {
   // Cart operations
@@ -155,24 +156,38 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const addReview = (reviewData: { name: string; content: string; rating: number; favoriteDish: string }) => {
-    const newReview: Testimonial = {
-      id: `rev-${Date.now()}`,
-      name: reviewData.name,
-      role: 'Verified Guest',
-      location: 'Pretodan Dining Guest',
-      content: reviewData.content,
-      rating: reviewData.rating,
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-      favoriteDish: reviewData.favoriteDish,
-    };
-    setTestimonials((prev) => {
-      const updated = [newReview, ...prev];
-      try {
-        localStorage.setItem('pretodan_reviews', JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
+  // Fetch initial live reviews from backend API on mount
+  useEffect(() => {
+    restaurantApi.getReviews().then((liveReviews) => {
+      if (liveReviews && Array.isArray(liveReviews) && liveReviews.length > 0) {
+        setTestimonials(liveReviews);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const addReview = async (reviewData: { name: string; content: string; rating: number; favoriteDish: string }) => {
+    try {
+      const saved = await restaurantApi.submitReview(reviewData);
+      const newReview: Testimonial = {
+        id: saved?.id || `rev-${Date.now()}`,
+        name: saved?.name || reviewData.name,
+        role: saved?.role || 'Verified Guest',
+        location: saved?.location || 'Pretodan Dining Guest',
+        content: saved?.content || reviewData.content,
+        rating: saved?.rating || reviewData.rating,
+        avatar: saved?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+        favoriteDish: saved?.favoriteDish || reviewData.favoriteDish,
+      };
+      setTestimonials((prev) => {
+        const updated = [newReview, ...prev];
+        try {
+          localStorage.setItem('pretodan_reviews', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+    } catch (e) {
+      console.warn('Backend review sync fallback:', e);
+    }
   };
 
   // PWA Install prompt event
@@ -319,12 +334,47 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deliveryFee = subtotal > 0 ? (subtotal >= 70 ? 0 : 5) : 0;
   const totalAmount = subtotal + deliveryFee;
 
-  const saveReservation = (res: TableReservation) => {
+  const saveReservation = async (res: TableReservation) => {
     setActiveReservation(res);
     showToast(`Table confirmed! Reference #${res.id} 🥂`);
+    try {
+      await restaurantApi.createReservation({
+        guestName: res.guestName,
+        email: res.email,
+        phone: res.phone,
+        date: res.date,
+        timeSlot: res.timeSlot,
+        guestsCount: res.guestsCount,
+        seatingArea: res.seatingArea,
+        occasion: res.occasion,
+        specialRequests: res.specialRequests
+      });
+    } catch (e) {
+      console.warn('Backend reservation sync fallback:', e);
+    }
   };
 
-  const trackOrderById = (orderId: string) => {
+  const trackOrderById = async (orderId: string) => {
+    try {
+      const backendOrder = await restaurantApi.trackOrder(orderId);
+      if (backendOrder) {
+        const mappedOrder: OrderStatus = {
+          orderId: backendOrder.orderId,
+          status: backendOrder.status,
+          estimatedMinutes: backendOrder.estimatedMinutes || 20,
+          timestamp: backendOrder.timestamp || 'Just now',
+          itemsCount: backendOrder.itemsCount || 1,
+          totalFormatted: backendOrder.totalFormatted || formatPrice(backendOrder.totalAmount || 75),
+          deliveryAddress: backendOrder.deliveryAddress
+        };
+        setTrackedOrder(mappedOrder);
+        setIsTrackingOpen(true);
+        return;
+      }
+    } catch {
+      // Fallback to local
+    }
+
     const found = recentOrders.find((o) => o.orderId.toUpperCase() === orderId.trim().toUpperCase());
     if (found) {
       setTrackedOrder(found);

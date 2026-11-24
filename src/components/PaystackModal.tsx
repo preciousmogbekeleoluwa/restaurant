@@ -3,9 +3,10 @@ import { useCart } from '../context/CartContext';
 import { X, CreditCard, Landmark, CheckCircle2, ShieldCheck, Sparkles, Copy, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RESTAURANT_INFO } from '../data/restaurantData';
+import { restaurantApi } from '../services/api';
 
 export const PaystackModal: React.FC = () => {
-  const { isPaystackOpen, setIsPaystackOpen, totalAmount, clearCart, showToast, formatPrice } = useCart();
+  const { isPaystackOpen, setIsPaystackOpen, totalAmount, clearCart, showToast, formatPrice, cart } = useCart();
   const [activeTab, setActiveTab] = useState<'card' | 'transfer'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -29,13 +30,27 @@ export const PaystackModal: React.FC = () => {
 
   if (!isPaystackOpen) return null;
 
-  const handleSimulatePayment = () => {
+  const handleSimulatePayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
+    try {
+      const orderData = await restaurantApi.createOrder({
+        items: cart.map(ci => ({
+          id: ci.item.id,
+          name: ci.item.name,
+          price: ci.item.price,
+          quantity: ci.quantity,
+          specialInstructions: ci.specialInstructions
+        })),
+        deliveryAddress: RESTAURANT_INFO.addressDisplay,
+        customerNotes: 'Online paid order',
+        paymentMethod: activeTab === 'card' ? 'card' : 'bank_transfer',
+        paymentStatus: 'paid'
+      });
+
+      const ref = orderData?.orderId || `PRETO-${Math.floor(100000 + Math.random() * 900000)}`;
+      setOrderReference(ref);
       setIsProcessing(false);
       setIsSuccess(true);
-      const ref = `PRETO-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderReference(ref);
 
       // Trigger celebratory confetti in brand colors
       confetti({
@@ -46,7 +61,13 @@ export const PaystackModal: React.FC = () => {
       });
 
       showToast(`Payment successful! Order reference: ${ref}`);
-    }, 1500);
+    } catch {
+      const fallbackRef = `PRETO-${Math.floor(100000 + Math.random() * 900000)}`;
+      setOrderReference(fallbackRef);
+      setIsProcessing(false);
+      setIsSuccess(true);
+      showToast(`Payment recorded! Order reference: ${fallbackRef}`);
+    }
   };
 
   const handleFinish = () => {
