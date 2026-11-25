@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { useCart } from '../context/CartContext';
 import { DrippingSauceHeader } from '../components/DrippingSauceHeader';
@@ -6,14 +6,25 @@ import { restaurantApi } from '../services/api';
 import { Phone, MessageCircle, MapPin, Mail, Clock, Send, CheckCircle2, Sparkles, Navigation, AlertCircle, Instagram, Facebook, Twitter } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
-  const { showToast } = useCart();
+  const { showToast, user } = useCart();
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
     subject: 'Table Reservation',
     message: '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.name,
+        email: prev.email || user.email,
+        phone: prev.phone || user.phone,
+      }));
+    }
+  }, [user]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);

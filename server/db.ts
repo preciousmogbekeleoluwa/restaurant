@@ -7,10 +7,12 @@ import {
   BackendReview,
   BackendContactMessage,
   BackendVipMember,
+  BackendCustomerUser,
   INITIAL_MENU_ITEMS,
   INITIAL_REVIEWS,
   INITIAL_ORDERS,
-  INITIAL_RESERVATIONS
+  INITIAL_RESERVATIONS,
+  INITIAL_USERS
 } from './data/seedData';
 
 interface DatabaseSchema {
@@ -20,6 +22,7 @@ interface DatabaseSchema {
   reviews: BackendReview[];
   contactMessages: BackendContactMessage[];
   vipMembers: BackendVipMember[];
+  users: BackendCustomerUser[];
 }
 
 class Database {
@@ -45,7 +48,8 @@ class Database {
           points: 720,
           joinedAt: new Date().toISOString()
         }
-      ]
+      ],
+      users: [...INITIAL_USERS]
     };
 
     this.loadFromDisk();
@@ -214,6 +218,57 @@ class Database {
     this.data.vipMembers.unshift(newMember);
     this.saveToDisk();
     return newMember;
+  }
+
+  // --- CUSTOMER USERS / AUTH ---
+  getUsers(): BackendCustomerUser[] {
+    return [...(this.data.users || [])];
+  }
+
+  getUserByEmail(email: string): BackendCustomerUser | undefined {
+    return (this.data.users || []).find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+  }
+
+  getUserById(id: string): BackendCustomerUser | undefined {
+    return (this.data.users || []).find(u => u.id === id);
+  }
+
+  registerCustomerUser(data: {
+    name: string;
+    email: string;
+    phone: string;
+    deliveryAddress?: string;
+    dietaryPreferences?: string;
+    password?: string;
+  }): BackendCustomerUser {
+    const existing = this.getUserByEmail(data.email);
+    if (existing) {
+      return existing;
+    }
+    const newUser: BackendCustomerUser = {
+      id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: data.name.trim(),
+      email: data.email.trim(),
+      phone: data.phone.trim(),
+      deliveryAddress: data.deliveryAddress || '123 Grand Continental Boulevard',
+      dietaryPreferences: data.dietaryPreferences || 'Chef Special',
+      password: data.password,
+      tier: 'Gold Gourmet Concierge',
+      points: 500, // 500 Welcome points
+      joinedAt: new Date().toISOString()
+    };
+    if (!this.data.users) this.data.users = [];
+    this.data.users.unshift(newUser);
+    this.saveToDisk();
+    return newUser;
+  }
+
+  updateCustomerUser(id: string, updates: Partial<BackendCustomerUser>): BackendCustomerUser | null {
+    const user = this.getUserById(id);
+    if (!user) return null;
+    Object.assign(user, updates);
+    this.saveToDisk();
+    return user;
   }
 
   // --- STATS ---

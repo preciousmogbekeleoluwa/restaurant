@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { MenuItem, CartItem, CurrencyCode, TableReservation, OrderStatus, Testimonial } from '../types';
+import { MenuItem, CartItem, CurrencyCode, TableReservation, OrderStatus, Testimonial, UserProfile } from '../types';
 import { RESTAURANT_INFO, TESTIMONIALS } from '../data/restaurantData';
-import { restaurantApi } from '../services/api';
+import { restaurantApi, ApiRegisterPayload } from '../services/api';
 
 interface CartContextType {
   // Cart operations
@@ -32,6 +32,15 @@ interface CartContextType {
   setIsPaystackOpen: (open: boolean) => void;
   selectedFoodModal: MenuItem | null;
   setSelectedFoodModal: (item: MenuItem | null) => void;
+
+  // Customer Authentication & Profile
+  user: UserProfile | null;
+  isAuthOpen: boolean;
+  setIsAuthOpen: (open: boolean) => void;
+  login: (email: string, password?: string) => Promise<boolean>;
+  register: (data: ApiRegisterPayload) => Promise<boolean>;
+  logout: () => void;
+  updateProfile: (data: Partial<UserProfile>) => Promise<boolean>;
 
   // Web App Modals
   isReservationOpen: boolean;
@@ -145,6 +154,65 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [isVipOpen, setIsVipOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  // Customer Authentication state persisted to localStorage
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem('pretodan_customer_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const login = async (email: string, password?: string): Promise<boolean> => {
+    try {
+      const loggedInUser = await restaurantApi.loginUser(email, password);
+      setUser(loggedInUser);
+      localStorage.setItem('pretodan_customer_user', JSON.stringify(loggedInUser));
+      showToast(`Welcome back, ${loggedInUser.name}! 🥂`);
+      setIsAuthOpen(false);
+      return true;
+    } catch (e: any) {
+      showToast(e.message || 'Login failed. Please check your credentials.');
+      return false;
+    }
+  };
+
+  const register = async (data: ApiRegisterPayload): Promise<boolean> => {
+    try {
+      const newUser = await restaurantApi.registerUser(data);
+      setUser(newUser);
+      localStorage.setItem('pretodan_customer_user', JSON.stringify(newUser));
+      showToast(`Welcome to Pretodan Restaurant, ${newUser.name}! 500 VIP points added.`);
+      setIsAuthOpen(false);
+      return true;
+    } catch (e: any) {
+      showToast(e.message || 'Registration failed.');
+      return false;
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('pretodan_customer_user');
+    showToast('You have signed out of your Pretodan account.');
+  };
+
+  const updateProfile = async (data: Partial<UserProfile>): Promise<boolean> => {
+    if (!user) return false;
+    try {
+      const updated = { ...user, ...data };
+      setUser(updated);
+      localStorage.setItem('pretodan_customer_user', JSON.stringify(updated));
+      await restaurantApi.updateUserProfile(data);
+      showToast('Your customer profile has been updated! ✨');
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   // Testimonials state persisted to localStorage
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
@@ -458,6 +526,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsPaystackOpen,
         selectedFoodModal,
         setSelectedFoodModal,
+        user,
+        isAuthOpen,
+        setIsAuthOpen,
+        login,
+        register,
+        logout,
+        updateProfile,
         isReservationOpen,
         setIsReservationOpen,
         activeReservation,

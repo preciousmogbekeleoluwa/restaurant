@@ -79,6 +79,19 @@ export interface BackendContactMessage {
   createdAt: string;
 }
 
+export interface BackendCustomerUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  deliveryAddress?: string;
+  dietaryPreferences?: string;
+  password?: string;
+  tier: 'VIP Patron' | 'Gold Gourmet Concierge' | 'Platinum Royal';
+  points: number;
+  joinedAt: string;
+}
+
 export interface BackendVipMember {
   id: string;
   name: string;
@@ -405,5 +418,41 @@ export const INITIAL_RESERVATIONS: BackendReservation[] = [
     specialRequests: "Window alcove table with champagne flute setup",
     status: "confirmed",
     createdAt: new Date().toISOString()
+  }
+];
+
+export const INITIAL_USERS: BackendCustomerUser[] = [
+  {
+    id: "USR-1001",
+    name: "Eleanor Vance",
+    email: "eleanor.vance@example.com",
+    phone: "+1 (555) 345-6789",
+    deliveryAddress: "88 Kensington High Street, Suite 12B",
+    dietaryPreferences: "Medium-rare prime cuts, Pinot Noir pairing",
+    tier: "Gold Gourmet Concierge",
+    points: 720,
+    joinedAt: "2026-11-01"
+  },
+  {
+    id: "USR-1002",
+    name: "Marcus Sterling",
+    email: "marcus.sterling@example.com",
+    phone: "+1 (555) 782-9012",
+    deliveryAddress: "14 Belgravia Gardens, Floor 3",
+    dietaryPreferences: "Artisanal seafood and paellas",
+    tier: "Platinum Royal",
+    points: 1250,
+    joinedAt: "2026-10-15"
+  },
+  {
+    id: "USR-1003",
+    name: "Lady Vivienne Montgomery",
+    email: "vivienne@example.com",
+    phone: "+1 (555) 234-8901",
+    deliveryAddress: "123 Grand Continental Boulevard, Suite 4B",
+    dietaryPreferences: "Truffle pasta and ribeye steak",
+    tier: "Gold Gourmet Concierge",
+    points: 850,
+    joinedAt: "2026-11-10"
   }
 ];

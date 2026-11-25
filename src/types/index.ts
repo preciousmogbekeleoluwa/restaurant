@@ -93,3 +93,15 @@ export interface VipMember {
   nextTierPoints: number;
   savedCoupons: string[];
 }
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  deliveryAddress?: string;
+  dietaryPreferences?: string;
+  tier: 'VIP Patron' | 'Gold Gourmet Concierge' | 'Platinum Royal';
+  points: number;
+  joinedAt: string;
+}

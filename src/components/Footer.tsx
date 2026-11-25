@@ -3,6 +3,7 @@ import { Logo } from './Logo';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { PageRoute } from '../types';
 import { useCart } from '../context/CartContext';
+import { restaurantApi } from '../services/api';
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send, Heart, Instagram, Facebook, Twitter, ArrowUpRight } from 'lucide-react';
 
 interface FooterProps {
@@ -13,11 +14,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   const [emailInput, setEmailInput] = useState('');
   const { showToast } = useCart();
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (emailInput.trim()) {
-      showToast('Thank you for subscribing to Pretodan VIP culinary updates!');
-      setEmailInput('');
+      try {
+        await restaurantApi.joinVip({ name: 'VIP Subscriber', email: emailInput.trim() });
+        showToast('Thank you for subscribing! VIP coupon PRETOVIP15 active 🎁');
+        setEmailInput('');
+      } catch {
+        showToast('Thank you for subscribing to Pretodan VIP culinary updates!');
+        setEmailInput('');
+      }
     }
   };
 

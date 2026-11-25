@@ -6,6 +6,7 @@ import { reservationsRouter } from './routes/reservations';
 import { reviewsRouter } from './routes/reviews';
 import { contactRouter } from './routes/contact';
 import { vipRouter } from './routes/vip';
+import { authRouter } from './routes/auth';
 import { db } from './db';
 
 export const app = express();
@@ -45,6 +46,7 @@ app.use('/api/reservations', reservationsRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/vip', vipRouter);
+app.use('/api/auth', authRouter);
 app.use('/api', vipRouter); // Mount /api/stats
 
 // 404 handler for API routes

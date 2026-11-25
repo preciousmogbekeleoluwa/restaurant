@@ -6,7 +6,7 @@ import { X, Calendar, Clock, Users, MapPin, Sparkles, CheckCircle2, MessageCircl
 import confetti from 'canvas-confetti';
 
 export const ReservationModal: React.FC = () => {
-  const { isReservationOpen, setIsReservationOpen, activeReservation, saveReservation } = useCart();
+  const { isReservationOpen, setIsReservationOpen, activeReservation, saveReservation, user } = useCart();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -19,9 +19,9 @@ export const ReservationModal: React.FC = () => {
   }, [isReservationOpen, setIsReservationOpen]);
   
   const [formData, setFormData] = useState({
-    guestName: '',
-    email: '',
-    phone: '',
+    guestName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
     date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow default
     timeSlot: '7:30 PM',
     guestsCount: 2,
@@ -29,6 +29,17 @@ export const ReservationModal: React.FC = () => {
     occasion: 'Celebration / Romantic Dinner',
     specialRequests: '',
   });
+
+  useEffect(() => {
+    if (user && isReservationOpen) {
+      setFormData((prev) => ({
+        ...prev,
+        guestName: prev.guestName || user.name,
+        email: prev.email || user.email,
+        phone: prev.phone || user.phone,
+      }));
+    }
+  }, [user, isReservationOpen]);
 
   const [confirmedReservation, setConfirmedReservation] = useState<TableReservation | null>(activeReservation);
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
-import { X, Trash2, Plus, Minus, MessageCircle, CreditCard, ShoppingBag, ArrowRight, ShieldCheck, MapPin } from 'lucide-react';
+import { X, Trash2, Plus, Minus, MessageCircle, CreditCard, ShoppingBag, ArrowRight, ShieldCheck, MapPin, User } from 'lucide-react';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 
 export const CartDrawer: React.FC = () => {
@@ -18,10 +18,18 @@ export const CartDrawer: React.FC = () => {
     setIsPaystackOpen,
     formatPrice,
     generateWhatsAppOrderUrl,
+    user,
+    setIsAuthOpen
   } = useCart();
 
-  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [deliveryAddress, setDeliveryAddress] = useState(user?.deliveryAddress || '');
   const [customerNotes, setCustomerNotes] = useState('');
+
+  useEffect(() => {
+    if (user?.deliveryAddress && !deliveryAddress) {
+      setDeliveryAddress(user.deliveryAddress);
+    }
+  }, [user]);
 
   if (!isCartOpen) return null;
 
@@ -174,8 +182,40 @@ export const CartDrawer: React.FC = () => {
                   })}
                 </div>
 
+                {/* Customer Account Status Banner */}
+                <div className="pt-3 pb-1 border-t border-brand-goldenYellow/15">
+                  {user ? (
+                    <div className="p-3 rounded-xl bg-brand-surfaceCard border border-brand-goldenYellow/30 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-brand-goldenYellow" />
+                        <div>
+                          <span className="font-bold text-brand-warmCream block font-heading">{user.name}</span>
+                          <span className="text-[10px] text-brand-goldenYellow">{user.tier || 'VIP Patron'} • {user.points || 500} pts</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setIsAuthOpen(true)}
+                        className="text-[11px] text-brand-burntOrange hover:text-brand-goldenYellow font-bold"
+                      >
+                        Profile
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsAuthOpen(true)}
+                      className="w-full p-2.5 rounded-xl bg-brand-charcoal hover:bg-brand-burntOrange/20 border border-brand-goldenYellow/25 text-left flex items-center justify-between text-xs text-brand-goldenYellow transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <User className="w-3.5 h-3.5" />
+                        <span>Sign in for saved address & VIP points</span>
+                      </span>
+                      <span className="text-brand-burntOrange font-black">Sign In →</span>
+                    </button>
+                  )}
+                </div>
+
                 {/* Delivery Address & Notes Inputs */}
-                <div className="pt-4 space-y-3 border-t border-brand-goldenYellow/15">
+                <div className="pt-2 space-y-3">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-brand-warmCream/80 mb-1 flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-brand-goldenYellow" />

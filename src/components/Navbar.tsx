@@ -14,7 +14,8 @@ import {
   Truck,
   Crown,
   Heart,
-  Globe
+  Globe,
+  User
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -35,7 +36,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     favorites,
     setIsReservationOpen,
     setIsTrackingOpen,
-    setIsVipOpen
+    setIsVipOpen,
+    user,
+    setIsAuthOpen
   } = useCart();
 
   useEffect(() => {
@@ -185,6 +188,29 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                 </button>
               )}
 
+              {/* Customer Sign In / Patron Profile Pill */}
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full border text-xs font-heading font-bold transition-all whitespace-nowrap shadow-sm active:scale-95 ${
+                  user
+                    ? 'bg-brand-surfaceCard border-brand-goldenYellow text-brand-goldenYellow hover:bg-brand-burntOrange/20'
+                    : 'bg-brand-surfaceCard hover:bg-brand-burntOrange/20 border-brand-goldenYellow/35 text-brand-goldenYellow'
+                }`}
+                title={user ? `Signed in as ${user.name}` : "Sign In or Register"}
+              >
+                {user ? (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="truncate max-w-[85px] sm:max-w-[110px]">{user.name.split(' ')[0]}</span>
+                  </>
+                ) : (
+                  <>
+                    <User className="w-3.5 h-3.5" />
+                    <span>Sign In</span>
+                  </>
+                )}
+              </button>
+
               {/* Shopping Cart Drawer Trigger */}
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -259,6 +285,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Customer Account / Sign In Profile Banner */}
+              <div className="pt-3 pb-3 border-b border-brand-goldenYellow/15">
+                <button
+                  onClick={() => { setIsAuthOpen(true); setMobileMenuOpen(false); }}
+                  className="w-full p-3 rounded-2xl bg-brand-charcoal border border-brand-goldenYellow/30 text-left flex items-center justify-between transition-colors hover:border-brand-goldenYellow"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-brand-surfaceCard border border-brand-goldenYellow/40 flex items-center justify-center text-brand-goldenYellow shrink-0">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-brand-goldenYellow block font-heading truncate">
+                        {user ? user.name : 'Sign In / Register'}
+                      </span>
+                      <span className="text-[10px] text-brand-warmCream/60 block">
+                        {user ? `${user.tier || 'VIP Patron'} • ${user.points || 500} pts` : 'Claim 500 VIP reward points'}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-bold text-brand-burntOrange font-heading shrink-0 ml-2">
+                    {user ? 'My Profile' : 'Sign In'} →
+                  </span>
+                </button>
               </div>
 
               {/* Mobile Page Links */}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageRoute } from '../types';
 import { useCart } from '../context/CartContext';
-import { Home, Utensils, Calendar, Truck, ShoppingBag } from 'lucide-react';
+import { Home, Utensils, Calendar, ShoppingBag, User } from 'lucide-react';
 
 interface MobileBottomNavProps {
   currentPage: PageRoute;
@@ -9,7 +9,7 @@ interface MobileBottomNavProps {
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, onNavigate }) => {
-  const { totalItems, setIsCartOpen, setIsReservationOpen, setIsTrackingOpen } = useCart();
+  const { totalItems, setIsCartOpen, setIsReservationOpen, user, setIsAuthOpen } = useCart();
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-charcoal/95 backdrop-blur-xl border-t border-brand-goldenYellow/25 py-2 px-3 shadow-2xl pb-safe">
@@ -49,16 +49,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
           <span className="text-[10px] font-bold text-brand-goldenYellow tracking-tight mt-0.5">Reserve</span>
         </button>
 
-        {/* 4. Live Order Track Button */}
-        <button
-          onClick={() => setIsTrackingOpen(true)}
-          className="flex flex-col items-center justify-center p-1.5 text-brand-warmCream/65 hover:text-brand-goldenYellow transition-colors"
-        >
-          <Truck className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Track</span>
-        </button>
-
-        {/* 5. Cart Button with Live Badge */}
+        {/* 4. Cart Button with Live Badge */}
         <button
           onClick={() => setIsCartOpen(true)}
           className="flex flex-col items-center justify-center p-1.5 relative text-brand-warmCream/65 hover:text-brand-goldenYellow transition-colors"
@@ -73,6 +64,23 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
             )}
           </div>
           <span className="text-[10px] tracking-tight">Cart</span>
+        </button>
+
+        {/* 5. Customer Profile / Sign In */}
+        <button
+          onClick={() => setIsAuthOpen(true)}
+          className="flex flex-col items-center justify-center p-1.5 relative text-brand-warmCream/65 hover:text-brand-goldenYellow transition-colors"
+          aria-label="Customer Account / Sign In"
+        >
+          <div className="relative">
+            <User className={`w-5 h-5 mb-0.5 ${user ? 'text-brand-goldenYellow' : ''}`} />
+            {user && (
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400" />
+            )}
+          </div>
+          <span className={`text-[10px] tracking-tight truncate max-w-[50px] ${user ? 'text-brand-goldenYellow font-bold' : ''}`}>
+            {user ? user.name.split(' ')[0] : 'Sign In'}
+          </span>
         </button>
 
       </div>

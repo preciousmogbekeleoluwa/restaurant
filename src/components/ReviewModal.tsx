@@ -5,13 +5,19 @@ import { X, Star, Send, Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ReviewModal: React.FC = () => {
-  const { isReviewOpen, setIsReviewOpen, showToast, addReview } = useCart();
+  const { isReviewOpen, setIsReviewOpen, showToast, addReview, user } = useCart();
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
-  const [name, setName] = useState('');
+  const [name, setName] = useState(user?.name || '');
   const [favoriteDish, setFavoriteDish] = useState(MENU_ITEMS[0].name);
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (user?.name && !name) {
+      setName(user.name);
+    }
+  }, [user]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -10,6 +10,7 @@ import { ReservationModal } from './components/ReservationModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { VipRewardsModal } from './components/VipRewardsModal';
 import { ReviewModal } from './components/ReviewModal';
+import { AuthModal } from './components/AuthModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PwaInstallBanner } from './components/PwaInstallBanner';
 import { HomePage } from './pages/HomePage';
@@ -68,6 +69,7 @@ const MainAppContent: React.FC = () => {
       <OrderTrackerModal />
       <VipRewardsModal />
       <ReviewModal />
+      <AuthModal />
 
       {/* Mobile App Bottom Navigation Dock */}
       <MobileBottomNav currentPage={currentPage} onNavigate={handleNavigate} />
